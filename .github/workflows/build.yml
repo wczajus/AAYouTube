@@ -35,10 +35,17 @@ jobs:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: ./gradlew --no-daemon assembleRelease
+        run: ./gradlew --no-daemon assembleRelease bundleRelease
 
       - uses: actions/upload-artifact@v4
         with:
           name: AAYouTube-release-apk
           path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      # App bundle for a Google Play internal testing track.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AAYouTube-release-aab
+          path: app/build/outputs/bundle/release/*.aab
           if-no-files-found: error

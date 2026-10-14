@@ -9,8 +9,9 @@ android {
     defaultConfig {
         applicationId = "pl.czajus.aayoutube"
         minSdk = 29
-        targetSdk = 35
-        versionCode = 1
+        targetSdk = 36
+        // CI run number, so every build installs as an update (Google Play also requires this).
+        versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
         versionName = "0.1.0"
 
         // OnePlus Nord is arm64; GeckoView ships native libraries per ABI, so keep only this one.
@@ -43,6 +44,8 @@ android {
 
 dependencies {
     implementation("androidx.car.app:app:1.4.0")
+    // Android Auto (phone projection) specific parts of the Car App Library.
+    implementation("androidx.car.app:app-projected:1.4.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     // Release channel of GeckoView (Firefox engine). "+" picks the newest release;
     // pin the resolved version here once the first build succeeds.
