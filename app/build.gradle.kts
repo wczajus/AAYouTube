@@ -1,5 +1,28 @@
+import java.net.URI
+import java.security.MessageDigest
+
 plugins {
     id("com.android.application")
+}
+
+// Legacy Android Auto SDK (projection mode). Google never published it; Fermata Auto keeps a copy.
+// Downloaded from a fixed Fermata commit and checked against a known SHA-256, not stored in this repo.
+val aautoAar: File = file("libs/aauto.aar")
+val aautoAarUrl =
+    "https://raw.githubusercontent.com/AndreyPavlenko/Fermata/" +
+        "7d2bd42e0fea98a796ba069b56c48ef07d874549/fermata/lib/auto/aauto.aar"
+val aautoAarSha256 = "99337c3b591ac9670c12b508da38886aedba61dd494f39f5f166f02580ec584b"
+
+fun sha256(file: File): String =
+    MessageDigest.getInstance("SHA-256").digest(file.readBytes()).joinToString("") { "%02x".format(it) }
+
+if (!aautoAar.exists() || sha256(aautoAar) != aautoAarSha256) {
+    aautoAar.parentFile.mkdirs()
+    URI(aautoAarUrl).toURL().openStream().use { input -> aautoAar.outputStream().use { input.copyTo(it) } }
+    check(sha256(aautoAar) == aautoAarSha256) {
+        aautoAar.delete()
+        "aauto.aar checksum mismatch, refusing to build"
+    }
 }
 
 android {
@@ -43,9 +66,8 @@ android {
 }
 
 dependencies {
-    implementation("androidx.car.app:app:1.4.0")
-    // Android Auto (phone projection) specific parts of the Car App Library.
-    implementation("androidx.car.app:app-projected:1.4.0")
+    implementation(files(aautoAar))
+    implementation("androidx.media:media:1.7.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     // Release channel of GeckoView (Firefox engine). "+" picks the newest release;
     // pin the resolved version here once the first build succeeds.

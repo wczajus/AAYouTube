@@ -9,11 +9,16 @@ Aplikacja nie jest przeznaczona do Sklepu Play.
 ## Jak to działa
 
 - Silnik przeglądarki to **GeckoView** (Firefox), bo Google blokuje logowanie w zwykłym WebView.
-- W aucie aplikacja zgłasza się jako aplikacja nawigacyjna (oficjalna biblioteka `androidx.car.app`).
-  Daje to pełnoekranową „mapę”, na której zamiast mapy rysujemy stronę YouTube.
-- Dotknięcia i przewijanie z ekranu auta są przekazywane do strony.
-- Przycisk **Szukaj** otwiera klawiaturę auta i wyszukuje w YouTube.
-- Po przełączeniu na Mapy Google strona działa dalej w tle. Po odłączeniu kabla wszystko się zamyka.
+- W aucie aplikacja używa starego mechanizmu **projekcji** Android Auto (tak jak Fermata Auto).
+  Nowa oficjalna biblioteka `androidx.car.app` odpada: Android Auto 17 w aucie przepuszcza jej aplikacje
+  tylko wtedy, gdy są zainstalowane ze Sklepu Play.
+- Biblioteka projekcji (`aauto.aar`) nie jest w tym repozytorium. Gradle pobiera ją przy budowaniu
+  z ustalonej wersji projektu Fermata i sprawdza sumę SHA-256 (`app/build.gradle.kts`).
+  To nieoficjalny, zamknięty plik Google; używamy go wyłącznie prywatnie.
+- W aucie: pasek z przyciskami **Szukaj**, **Wstecz**, **Start** nad stroną YouTube. Dotyk działa bezpośrednio,
+  wyszukiwanie korzysta z klawiatury auta.
+- Dodatkowo aplikacja ma pustą (na razie) usługę multimedialną, która też pojawia się w Android Auto.
+- Po odłączeniu kabla strona w aucie się zamyka i odtwarzanie się zatrzymuje.
 - Na telefonie aplikacja pokazuje tę samą stronę: tam logujesz się na konto Google (raz).
 
 ## Budowanie
