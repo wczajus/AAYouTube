@@ -33,12 +33,20 @@ Gotowy plik: zakładka **Actions** → ostatnie uruchomienie „Build APK” →
 
 ## Włączenie w Android Auto (jednorazowo)
 
+Android Auto 17.x pokazuje w aucie tylko aplikacje, które telefon uznaje za zainstalowane ze Sklepu Play.
+Zwykła instalacja pliku APK nie wystarcza, nawet z włączonymi „Nieznanymi źródłami”.
+Dlatego AAYouTube instalujemy przez KingInstaller (narzędzie innej firmy: https://github.com/fcaronte/KingInstaller).
+
 1. Na telefonie: Ustawienia → Połączone urządzenia → Ustawienia połączeń → **Android Auto**.
 2. Przewiń na dół i stuknij 10 razy w **Wersja**, aż pojawi się informacja o trybie dewelopera.
 3. Menu ⋮ (prawy górny róg) → **Ustawienia dla programistów** → zaznacz **Nieznane źródła**.
-4. Odłącz kabel, wymuś zatrzymanie Android Auto (Ustawienia → Aplikacje → Android Auto → Wymuś zatrzymanie) i podłącz ponownie.
-5. AAYouTube zgłasza się jako aplikacja nawigacyjna. Jeśli ikony nie ma na pierwszej stronie menu w aucie,
-   sprawdź kolejne strony oraz ustawienia wyświetlania aplikacji w Android Auto (nazwa opcji zależy od wersji).
+4. Odinstaluj AAYouTube, jeśli był zainstalowany zwykłym instalatorem.
+5. W KingInstaller wybierz `app-release.apk` i zainstaluj metodą podstawową (bez przełączników).
+6. Ustawienia → Aplikacje → AAYouTube: na dole szczegółów powinno być, że aplikacja jest ze **Sklepu Google Play**.
+   Jeśli nie, spróbuj w KingInstaller metody **Shizuku**.
+7. Odłącz kabel, wymuś zatrzymanie Android Auto (Ustawienia → Aplikacje → Android Auto → Wymuś zatrzymanie) i podłącz ponownie.
+
+Każdą nową wersję AAYouTube instaluj tak samo, przez KingInstaller.
 
 ## Pierwsze uruchomienie
 
