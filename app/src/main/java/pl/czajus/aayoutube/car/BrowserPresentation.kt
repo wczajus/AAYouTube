@@ -25,7 +25,8 @@ class BrowserPresentation(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val view = GeckoView(context).apply { setSession(session) }
+        val view = GeckoView(context)
+        view.setSession(session)
         val frame = FrameLayout(context).apply {
             setBackgroundColor(Color.BLACK)
             addView(view, MATCH_PARENT, MATCH_PARENT)
