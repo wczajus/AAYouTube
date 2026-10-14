@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AAYouTube</string>
+    <string name="phone_hint">Zaloguj się tutaj na konto YouTube. Logowanie jest zapamiętane i działa też w aucie.</string>
+    <string name="action_search">Szukaj</string>
+    <string name="action_back">Wstecz</string>
+    <string name="action_home">Start</string>
+    <string name="search_hint">Szukaj w YouTube</string>
+    <string name="search_empty">Wpisz, czego szukasz, i zatwierdź</string>
+</resources>
