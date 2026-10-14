@@ -37,12 +37,13 @@
             </intent-filter>
         </service>
 
-        <!-- Android Auto media entry. -->
+        <!-- Android Auto media entry. Its label must differ from the projection screen's: Fermata does
+             the same ("Fermata Media Service"), otherwise Android Auto may show only one of the two. -->
         <service
             android:name=".media.YouTubeMediaService"
             android:exported="true"
             android:icon="@drawable/ic_app"
-            android:label="@string/app_name">
+            android:label="@string/media_service_name">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>

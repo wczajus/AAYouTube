@@ -17,7 +17,8 @@ Aplikacja nie jest przeznaczona do Sklepu Play.
   To nieoficjalny, zamknięty plik Google; używamy go wyłącznie prywatnie.
 - W aucie: pasek z przyciskami **Szukaj**, **Wstecz**, **Start** nad stroną YouTube. Dotyk działa bezpośrednio,
   wyszukiwanie korzysta z klawiatury auta.
-- Dodatkowo aplikacja ma pustą (na razie) usługę multimedialną, która też pojawia się w Android Auto.
+- Dodatkowo aplikacja ma usługę multimedialną **AAYouTube Audio** (na razie tylko z podpowiedzią), która też
+  pojawia się w Android Auto. Ekran z wideo to osobna ikona **AAYouTube**.
 - Po odłączeniu kabla strona w aucie się zamyka i odtwarzanie się zatrzymuje.
 - Na telefonie aplikacja pokazuje tę samą stronę: tam logujesz się na konto Google (raz).
 
@@ -47,8 +48,11 @@ Dlatego AAYouTube instalujemy przez KingInstaller (narzędzie innej firmy: https
 3. Menu ⋮ (prawy górny róg) → **Ustawienia dla programistów** → zaznacz **Nieznane źródła**.
 4. Odinstaluj AAYouTube, jeśli był zainstalowany zwykłym instalatorem.
 5. W KingInstaller wybierz `app-release.apk` i zainstaluj metodą podstawową (bez przełączników).
-6. Ustawienia → Aplikacje → AAYouTube: na dole szczegółów powinno być, że aplikacja jest ze **Sklepu Google Play**.
-   Jeśli nie, spróbuj w KingInstaller metody **Shizuku**.
+6. W KingInstaller otwórz **App Diagnostic Checker** i sprawdź AAYouTube oraz, dla porównania, Fermata Control
+   (ona działa w aucie). Pola „Installed by” i „Requested by” powinny być takie same w obu aplikacjach,
+   „Installed by” to Sklep Play (`com.android.vending`). Jeśli nie, spróbuj w KingInstaller metody **Shizuku**
+   albo **Auto-Fixer**. Ekran z wideo (projekcja) najpewniej wymaga źródła „Sklep Play” (tak działa Fermata);
+   usługa multimedialna pojawia się także bez tego.
 7. Odłącz kabel, wymuś zatrzymanie Android Auto (Ustawienia → Aplikacje → Android Auto → Wymuś zatrzymanie) i podłącz ponownie.
 
 Każdą nową wersję AAYouTube instaluj tak samo, przez KingInstaller.
