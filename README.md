@@ -28,8 +28,8 @@ Po pierwszym udanym buildzie można ją tam przypiąć na konkretną wersję.
 ## Budowanie na GitHubie (bez Android Studio)
 
 Plik `.github/workflows/build.yml` buduje APK przy każdym wysłaniu kodu na GitHub.
-Gotowy plik: zakładka **Actions** → ostatnie uruchomienie „Build APK” → sekcja **Artifacts** → `AAYouTube-apk`
-(pobiera się ZIP z plikiem `app-debug.apk` w środku). Budowanie można też uruchomić ręcznie przyciskiem **Run workflow**.
+Gotowy plik: zakładka **Actions** → ostatnie uruchomienie „Build APK” → sekcja **Artifacts** → `AAYouTube-release-apk`
+(pobiera się ZIP z plikiem `app-release.apk` w środku). Budowanie można też uruchomić ręcznie przyciskiem **Run workflow**.
 
 ## Włączenie w Android Auto (jednorazowo)
 
