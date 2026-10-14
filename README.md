@@ -36,7 +36,9 @@ Gotowy plik: zakładka **Actions** → ostatnie uruchomienie „Build APK” →
 1. Na telefonie: Ustawienia → Połączone urządzenia → Ustawienia połączeń → **Android Auto**.
 2. Przewiń na dół i stuknij 10 razy w **Wersja**, aż pojawi się informacja o trybie dewelopera.
 3. Menu ⋮ (prawy górny róg) → **Ustawienia dla programistów** → zaznacz **Nieznane źródła**.
-4. Jeśli ikona AAYouTube nie pojawi się w aucie: Android Auto → **Dostosuj program uruchamiający** i ją zaznacz.
+4. Odłącz kabel, wymuś zatrzymanie Android Auto (Ustawienia → Aplikacje → Android Auto → Wymuś zatrzymanie) i podłącz ponownie.
+5. AAYouTube zgłasza się jako aplikacja nawigacyjna. Jeśli ikony nie ma na pierwszej stronie menu w aucie,
+   sprawdź kolejne strony oraz ustawienia wyświetlania aplikacji w Android Auto (nazwa opcji zależy od wersji).
 
 ## Pierwsze uruchomienie
 
