@@ -87,8 +87,11 @@ class CarBrowser(
             pagePort = port
             port.setDelegate(object : WebExtension.PortDelegate {
                 override fun onPortMessage(message: Any, port: WebExtension.Port) {
-                    val fullscreen = (message as? JSONObject)?.optBoolean("fullscreen") ?: return
-                    if (pagePort === port) setPageFullscreen(fullscreen)
+                    val json = message as? JSONObject ?: return
+                    json.optString("log").takeIf { it.isNotEmpty() }?.let { Log.d(TAG, "Page: $it") }
+                    if (json.has("fullscreen") && pagePort === port) {
+                        setPageFullscreen(json.optBoolean("fullscreen"))
+                    }
                 }
 
                 override fun onDisconnect(port: WebExtension.Port) {

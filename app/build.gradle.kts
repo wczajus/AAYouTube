@@ -44,15 +44,18 @@ android {
     }
 
     // A fixed release key comes from the CI secrets (see README). Without it the release build
-    // falls back to the debug key, which changes between CI runs.
+    // falls back to the debug key, which changes between CI runs. Only the keystore and its
+    // password are required: the alias defaults to "aayoutube" and the key password to the
+    // keystore password (GitHub passes a missing secret as an empty string).
     val releaseKeystore = System.getenv("RELEASE_KEYSTORE_FILE")?.let { file(it) }?.takeIf { it.exists() }
+    fun secret(name: String) = System.getenv(name)?.takeIf { it.isNotEmpty() }
     signingConfigs {
         if (releaseKeystore != null) {
             create("release") {
                 storeFile = releaseKeystore
-                storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("RELEASE_KEY_ALIAS")
-                keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+                storePassword = secret("RELEASE_KEYSTORE_PASSWORD")
+                keyAlias = secret("RELEASE_KEY_ALIAS") ?: "aayoutube"
+                keyPassword = secret("RELEASE_KEY_PASSWORD") ?: secret("RELEASE_KEYSTORE_PASSWORD")
             }
         }
     }

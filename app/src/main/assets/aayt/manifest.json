@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "AAYouTube page tweaks",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Changes to the YouTube page for the car screen. Bump the version when changing it.",
   "browser_specific_settings": {
     "gecko": {

@@ -37,6 +37,26 @@ Plik `.github/workflows/build.yml` buduje APK przy każdym wysłaniu kodu na Git
 Gotowy plik: zakładka **Actions** → ostatnie uruchomienie „Build APK” → sekcja **Artifacts** → `AAYouTube-release-apk`
 (pobiera się ZIP z plikiem `app-release.apk` w środku). Budowanie można też uruchomić ręcznie przyciskiem **Run workflow**.
 
+### Stały klucz podpisu (aktualizacja bez odinstalowywania)
+
+Bez własnego klucza każdy build na GitHubie ma inny podpis i Android nie przyjmie go jako aktualizacji.
+Klucz tworzy się raz, na swoim komputerze (PowerShell, `keytool` z Android Studio):
+
+```powershell
+& "C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe" -genkeypair -keystore aayoutube.jks `
+    -alias aayoutube -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=AAYouTube"
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("$PWD\aayoutube.jks")) | Set-Clipboard
+```
+
+Potem na GitHubie: **Settings → Secrets and variables → Actions → New repository secret**:
+
+- `RELEASE_KEYSTORE_BASE64`: zawartość schowka (zakodowany plik `aayoutube.jks`),
+- `RELEASE_KEYSTORE_PASSWORD`: hasło podane przy tworzeniu klucza.
+
+Opcjonalnie `RELEASE_KEY_ALIAS` i `RELEASE_KEY_PASSWORD`, jeśli klucz ma inny alias lub osobne hasło.
+Plik `aayoutube.jks` i hasło zachowaj (bez nich nie da się wydać aktualizacji) i nigdy nie dodawaj ich do repozytorium.
+Pierwszy build z tym kluczem trzeba jeszcze zainstalować po odinstalowaniu starej wersji; kolejne instalują się jako aktualizacje.
+
 ## Włączenie w Android Auto (jednorazowo)
 
 Ekran wideo (projekcja) Android Auto pokazuje tylko wtedy, gdy telefon uznaje aplikację za zainstalowaną
@@ -56,7 +76,8 @@ AAYouTube ma do tego przycisk **Zainstaluj APK**.
    „Źródło instalacji: Sklep Play”.
 7. Odłącz kabel, wymuś zatrzymanie Android Auto (Ustawienia → Aplikacje → Android Auto → Wymuś zatrzymanie) i podłącz ponownie.
 
-Każdą nową wersję instaluj tak samo. Jeśli wersja z GitHuba ma inny klucz podpisu, najpierw odinstaluj starą.
+Każdą nową wersję instaluj tak samo. Jeśli wersja z GitHuba ma inny klucz podpisu, najpierw odinstaluj starą
+(ze stałym kluczem, patrz wyżej, nie trzeba).
 
 ## Pierwsze uruchomienie
 
