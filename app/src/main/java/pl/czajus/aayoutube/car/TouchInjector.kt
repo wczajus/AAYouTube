@@ -17,7 +17,8 @@ class TouchInjector(private val dispatch: (MotionEvent) -> Unit) {
 
     private val handler = Handler(Looper.getMainLooper())
     private val endDragRunnable = Runnable { endDrag() }
-    private var dragging = false
+    var dragging = false
+        private set
     private var downTime = 0L
     private var x = 0f
     private var y = 0f
@@ -35,6 +36,11 @@ class TouchInjector(private val dispatch: (MotionEvent) -> Unit) {
         handler.postDelayed({
             send(down, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, px, py)
         }, TAP_DURATION_MS)
+    }
+
+    fun doubleClick(px: Float, py: Float) {
+        click(px, py)
+        handler.postDelayed({ click(px, py) }, DOUBLE_TAP_GAP_MS)
     }
 
     /** Starts at the last tap if it was recent, otherwise at [fallbackX], [fallbackY]. */
@@ -77,6 +83,7 @@ class TouchInjector(private val dispatch: (MotionEvent) -> Unit) {
 
     private companion object {
         const val TAP_DURATION_MS = 40L
+        const val DOUBLE_TAP_GAP_MS = 120L
         const val DRAG_END_DELAY_MS = 150L
         const val TAP_ANCHOR_MS = 4000L
     }

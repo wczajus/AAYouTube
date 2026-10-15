@@ -18,6 +18,10 @@ class BrowserScreen(
     private val browser: CarBrowser,
 ) : Screen(carContext) {
 
+    init {
+        browser.onFullscreenChanged = { invalidate() }
+    }
+
     override fun onGetTemplate(): Template {
         val actions = ActionStrip.Builder()
             .addAction(textAction(R.string.action_search) { openSearch() })
@@ -25,11 +29,14 @@ class BrowserScreen(
             .addAction(textAction(R.string.action_home) { browser.load(YOUTUBE_HOME) })
             .build()
 
-        // Map buttons take icons only. The pan button lets Android Auto forward drag gestures
-        // (page scrolling) to the surface.
+        // Map buttons take icons only (four at most). The pan button lets Android Auto forward
+        // drag gestures (page scrolling) to the surface.
+        val fullscreenIcon =
+            if (browser.pageFullscreen) R.drawable.ic_fullscreen_exit else R.drawable.ic_fullscreen
         val mapActions = ActionStrip.Builder()
             .addAction(iconAction(R.drawable.ic_seek_back) { browser.seekBy(-SEEK_SECONDS) })
             .addAction(iconAction(R.drawable.ic_seek_forward) { browser.seekBy(SEEK_SECONDS) })
+            .addAction(iconAction(fullscreenIcon) { browser.toggleFullscreen() })
             .addAction(Action.PAN)
             .build()
 

@@ -3,9 +3,12 @@
 // Fullscreen for the YouTube player without the browser's fullscreen mode.
 //
 // GeckoView refuses real fullscreen for the page shown on the car screen, so the player's
-// fullscreen button did nothing there. The page's fullscreen API is replaced: the requested
-// element is stretched over the whole page (shown in the top layer, like real fullscreen) and
-// the page is told it is in fullscreen. The car screen has no browser UI to hide anyway.
+// fullscreen button did nothing there. The page's fullscreen API is replaced: the player is
+// stretched over the whole page (shown in the top layer, like real fullscreen) and the page is
+// told it is in fullscreen. The car screen has no browser UI to hide anyway.
+//
+// The app's car buttons reach this script through a native messaging port: it can enter or
+// leave fullscreen, and it is told when fullscreen changes.
 
 const page = window.wrappedJSObject;
 const MARK = "data-aayt-fullscreen";
@@ -32,66 +35,107 @@ const STYLE = `
     left: 0 !important;
     object-fit: contain !important;
   }
+  /* The blurred "ambient mode" copy of the video must not cover the picture. */
+  [${MARK}] [class*="cinematic"], [${MARK}] [id*="cinematic"] {
+    display: none !important;
+  }
 `;
+// No double-tap zoom: on the car screen it blows the page up with no way back.
+const PAGE_STYLE = `html { touch-action: manipulation !important; }`;
 
-let current = null;
-let styleAdded = false;
+const FULLSCREEN_BUTTONS = "button.fullscreen-icon, .fullscreen-icon, .ytp-fullscreen-button";
 
-function addStyle() {
-  if (styleAdded) return;
+let requested = null; // What the page asked to show in fullscreen (reported back to it).
+let stretched = null; // What is actually stretched over the page: the player.
+let port = null;
+
+function addStyle(css) {
   const style = document.createElement("style");
-  style.textContent = STYLE;
-  (document.head || document.documentElement).appendChild(style);
-  styleAdded = true;
+  style.textContent = css;
+  const parent = document.head || document.documentElement;
+  if (parent) {
+    parent.appendChild(style);
+  } else {
+    // Very early in loading there may be no document element yet.
+    document.addEventListener("DOMContentLoaded", () => document.head.appendChild(style), {
+      once: true,
+    });
+  }
+}
+
+let fullscreenStyleAdded = false;
+function addFullscreenStyle() {
+  if (fullscreenStyleAdded) return;
+  addStyle(STYLE);
+  fullscreenStyleAdded = true;
+}
+
+function playerOf(element) {
+  // The video player itself, without the page around it (titles, the ambient-mode backdrop).
+  return (
+    element.closest(".html5-video-player") ||
+    element.querySelector(".html5-video-player") ||
+    element
+  );
 }
 
 function notify(element) {
   for (const type of ["fullscreenchange", "webkitfullscreenchange"]) {
     element.dispatchEvent(new Event(type, { bubbles: true, composed: true }));
   }
+  report();
+}
+
+function report() {
+  if (!port) return;
+  try {
+    port.postMessage({ fullscreen: requested !== null });
+  } catch (e) {
+    port = null;
+  }
 }
 
 function enter(element) {
-  // Stretch the whole player rather than the bare video, so its controls stay usable.
-  if (element.localName === "video") {
-    element = element.closest(".html5-video-player") || element;
-  }
-  if (current === element) return;
-  if (current) leave();
-  addStyle();
-  current = element;
-  element.setAttribute(MARK, "");
+  if (requested === element) return;
+  if (requested) leave();
+  addFullscreenStyle();
+  requested = element;
+  stretched = playerOf(element);
+  stretched.setAttribute(MARK, "");
   try {
     // The top layer keeps the player above everything, whatever its parents' styles are.
-    element.setAttribute("popover", "manual");
-    element.showPopover();
+    stretched.setAttribute("popover", "manual");
+    stretched.showPopover();
   } catch (e) {
-    element.removeAttribute("popover");
+    stretched.removeAttribute("popover");
   }
   notify(element);
 }
 
 function leave() {
-  const element = current;
+  const element = requested;
   if (!element) return;
-  current = null;
   try {
-    element.hidePopover();
+    stretched.hidePopover();
   } catch (e) {
     // Not shown as a popover.
   }
-  element.removeAttribute("popover");
-  element.removeAttribute(MARK);
+  stretched.removeAttribute("popover");
+  stretched.removeAttribute(MARK);
+  requested = null;
+  stretched = null;
   notify(element);
 }
 
 function fullscreenElement() {
   // The player can be removed by the page (e.g. when leaving the video).
-  if (current && !current.isConnected) {
-    current.removeAttribute(MARK);
-    current = null;
+  if (requested && !requested.isConnected) {
+    stretched.removeAttribute(MARK);
+    requested = null;
+    stretched = null;
+    report();
   }
-  return current;
+  return requested;
 }
 
 function resolved() {
@@ -154,4 +198,33 @@ replaceGetter(
 if (page.ScreenOrientation) {
   replaceMethod(page.ScreenOrientation.prototype, ["lock"], resolved);
   replaceMethod(page.ScreenOrientation.prototype, ["unlock"], () => {});
+}
+
+addStyle(PAGE_STYLE);
+
+// Car buttons. Only the car screen answers; elsewhere the port just closes.
+// (Calls from here would reach the browser's own fullscreen API, not the replacement above.)
+function onAppMessage(message) {
+  if (message.action === "exitFullscreen") {
+    if (fullscreenElement()) leave();
+  } else if (message.action === "enterFullscreen") {
+    if (fullscreenElement()) return;
+    // The player's own button keeps its controls in step with fullscreen.
+    const button = document.querySelector(FULLSCREEN_BUTTONS);
+    if (button) button.click();
+    if (fullscreenElement()) return;
+    const player = document.querySelector(".html5-video-player");
+    if (player) enter(player);
+  }
+}
+
+try {
+  port = browser.runtime.connectNative("aayt");
+  port.onMessage.addListener(onAppMessage);
+  port.onDisconnect.addListener(() => {
+    port = null;
+  });
+  report();
+} catch (e) {
+  port = null;
 }

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import org.mozilla.geckoview.GeckoRuntime
 import org.mozilla.geckoview.GeckoRuntimeSettings
+import org.mozilla.geckoview.WebExtension
 
 const val YOUTUBE_HOME = "https://m.youtube.com/"
 
@@ -27,8 +28,28 @@ class AAYouTubeApp : Application() {
             .build()
         GeckoRuntime.create(this, settings).also { runtime ->
             runtime.webExtensionController.ensureBuiltIn(PAGE_TWEAKS_URL, PAGE_TWEAKS_ID)
-                .accept(null) { error -> Log.e(TAG, "Page tweaks not installed", error) }
+                .accept({ extension -> pageTweaksReady(extension) }) { error ->
+                    Log.e(TAG, "Page tweaks not installed", error)
+                    pageTweaksReady(null)
+                }
         }
+    }
+
+    private var pageTweaks: WebExtension? = null
+    private var pageTweaksDone = false
+    private val pageTweaksWaiting = mutableListOf<(WebExtension?) -> Unit>()
+
+    /** Runs [block] once the built-in add-on is installed, with null if that failed. */
+    fun withPageTweaks(block: (WebExtension?) -> Unit) {
+        geckoRuntime // Starts the installation.
+        if (pageTweaksDone) block(pageTweaks) else pageTweaksWaiting += block
+    }
+
+    private fun pageTweaksReady(extension: WebExtension?) {
+        pageTweaks = extension
+        pageTweaksDone = true
+        pageTweaksWaiting.forEach { it(extension) }
+        pageTweaksWaiting.clear()
     }
 
     private companion object {
@@ -38,3 +59,6 @@ class AAYouTubeApp : Application() {
 
 val Context.geckoRuntime: GeckoRuntime
     get() = (applicationContext as AAYouTubeApp).geckoRuntime
+
+fun Context.withPageTweaks(block: (WebExtension?) -> Unit) =
+    (applicationContext as AAYouTubeApp).withPageTweaks(block)

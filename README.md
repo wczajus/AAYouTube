@@ -76,10 +76,15 @@ Każdą nową wersję instaluj tak samo. Jeśli wersja z GitHuba ma inny klucz p
 | Przeciągnięcie palcem | przewijanie strony (jeśli nie działa, najpierw stuknij przycisk ze strzałkami na mapie) |
 | Stuknięcie, a zaraz potem przeciągnięcie | przeciąganie od stukniętego miejsca, np. suwaka na pasku postępu filmu (Android Auto nie podaje, gdzie zaczyna się przeciąganie) |
 | ⏪ / ⏩ (przy mapie) | film 10 s wstecz / do przodu |
-| Przycisk pełnego ekranu w odtwarzaczu | film na cały ekran auta (to samo ponownie: wyjście) |
+| ⛶ (przy mapie) lub przycisk pełnego ekranu w odtwarzaczu | film na cały ekran auta (to samo ponownie: wyjście) |
+| Podwójne stuknięcie | na pełnym ekranie: wyjście z pełnego ekranu; poza nim trafia do strony (w odtwarzaczu YouTube przewija o 10 s) |
 | Szukaj | klawiatura auta, wyniki w YouTube |
 | Wstecz | poprzednia strona |
 | Start | strona główna YouTube |
+
+Dźwięk: film przejmuje dźwięk jak każdy odtwarzacz (np. radio się zatrzymuje). Włączenie innego
+odtwarzacza pauzuje film; po rozmowie telefonicznej film gra dalej, a komunikaty nawigacji
+tylko go ściszają.
 
 ## Etap 1 (prototyp): co sprawdzić w aucie
 
