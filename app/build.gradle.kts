@@ -67,6 +67,8 @@ android {
 
 dependencies {
     implementation(files(aautoAar))
+    implementation("androidx.car.app:app:1.4.0")
+    implementation("androidx.car.app:app-projected:1.4.0")
     implementation("androidx.media:media:1.7.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     // Release channel of GeckoView (Firefox engine). "+" picks the newest release;

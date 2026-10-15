@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">AAYouTube</string>
     <string name="media_service_name">AAYouTube Audio</string>
+    <string name="nav_service_name">AAYouTube Wideo</string>
     <string name="media_hint_title">Wideo: ikona „AAYouTube” w menu aplikacji</string>
     <string name="media_hint_subtitle">Ten ekran obsłuży później sterowanie dźwiękiem</string>
     <string name="phone_hint">Zaloguj się tutaj na konto YouTube. Logowanie jest zapamiętane i działa też w aucie.</string>
