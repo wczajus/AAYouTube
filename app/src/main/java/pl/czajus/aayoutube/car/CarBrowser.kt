@@ -56,6 +56,10 @@ class CarBrowser(
     private var dpi = 0
     private var stableArea: Rect? = null
 
+    // The most of the screen Android Auto leaves uncovered: its buttons hide after a while.
+    // Fullscreen video uses all of it; the buttons then show over the video for a moment.
+    private var fullArea: Rect? = null
+
     // The page's media (the YouTube video), controlled directly so the car buttons can seek.
     // The playback position is the last reported one, extrapolated with the playback rate.
     private var media: MediaSession? = null
@@ -240,6 +244,7 @@ class CarBrowser(
         width = surfaceContainer.width
         height = surfaceContainer.height
         dpi = newDpi
+        if (sizeChanged) fullArea = null
 
         val display = virtualDisplay
         if (display == null) {
@@ -281,6 +286,9 @@ class CarBrowser(
 
     override fun onVisibleAreaChanged(visibleArea: Rect) {
         Log.d(TAG, "Visible area $visibleArea")
+        val area = fullArea
+        if (area == null) fullArea = Rect(visibleArea) else area.union(visibleArea)
+        if (pageFullscreen) applyInsets()
     }
 
     override fun onClick(x: Float, y: Float) {
@@ -343,6 +351,7 @@ class CarBrowser(
         if (pageFullscreen == fullscreen) return
         Log.d(TAG, "Page fullscreen $fullscreen")
         pageFullscreen = fullscreen
+        applyInsets()
         onFullscreenChanged?.invoke()
     }
 
@@ -396,7 +405,8 @@ class CarBrowser(
 
     /** Keeps the page clear of the Android Auto buttons drawn over the surface. */
     private fun applyInsets() {
-        val area = stableArea ?: return
+        val area = (if (pageFullscreen) fullArea?.takeUnless { it.isEmpty } else null)
+            ?: stableArea ?: return
         if (width <= 0 || height <= 0) return
         presentation?.setInsets(
             Rect(area.left, area.top, (width - area.right).coerceAtLeast(0),

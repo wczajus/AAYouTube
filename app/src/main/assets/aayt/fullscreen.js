@@ -32,11 +32,19 @@ const STYLE = `
     z-index: 2147483647 !important;
     background: #000 !important;
   }
-  [${MARK}] video {
+  /* The page sizes the video in pixels inside a container of zero height, so both are
+     stretched: a percentage height of that container would leave the video 0 px high. */
+  [${MARK}] .html5-video-container {
+    position: absolute !important;
+    inset: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    top: 0 !important;
-    left: 0 !important;
+  }
+  [${MARK}] video {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     object-fit: contain !important;
   }
   /* The blurred "ambient mode" copy of the video must not cover the picture. */
