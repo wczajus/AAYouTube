@@ -13,7 +13,7 @@ import java.io.File
 private const val PLAY_STORE = "com.android.vending"
 
 /**
- * Android Auto lists projection screens only for apps whose installer is the Play Store. The
+ * In a car, Android Auto lists the video screen only for apps whose installer is the Play Store. The
  * system package installer takes that name from [Intent.EXTRA_INSTALLER_PACKAGE_NAME] when an APK
  * is opened with [Intent.ACTION_INSTALL_PACKAGE]; this is how Local Video Player ends up
  * "installed by" the Play Store on the owner's phone.
@@ -22,11 +22,13 @@ fun Context.isInstalledFromPlayStore(): Boolean =
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
         packageManager.getInstallSourceInfo(packageName).installingPackageName == PLAY_STORE
 
-/** Copies [apk] to the cache (the APK is ~100 MB, so off the main thread) and opens the installer. */
+private val Context.apkCopy get() = File(File(cacheDir, "apk"), "install.apk")
+
+/** Copies [apk] to the cache (the APK is ~200 MB, so off the main thread) and opens the installer. */
 fun Activity.installAsFromPlayStore(apk: Uri) {
     Toast.makeText(this, R.string.install_preparing, Toast.LENGTH_SHORT).show()
     Thread {
-        val copy = File(File(cacheDir, "apk").apply { mkdirs() }, "install.apk")
+        val copy = apkCopy.apply { parentFile?.mkdirs() }
         val copied = contentResolver.openInputStream(apk)?.use { input ->
             copy.outputStream().use { input.copyTo(it) }
         } != null
@@ -43,4 +45,9 @@ fun Activity.installAsFromPlayStore(apk: Uri) {
             startActivity(intent)
         }
     }.start()
+}
+
+/** Frees the space taken by the last copy: the update replaces the app before it could do so itself. */
+fun Context.deleteApkCopy() {
+    apkCopy.delete()
 }

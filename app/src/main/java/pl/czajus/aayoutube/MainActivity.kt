@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import org.mozilla.geckoview.GeckoSession
 import org.mozilla.geckoview.GeckoView
+import pl.czajus.aayoutube.install.deleteApkCopy
 import pl.czajus.aayoutube.install.installAsFromPlayStore
 import pl.czajus.aayoutube.install.isInstalledFromPlayStore
 
@@ -23,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // Not when recreated: the installer may still be reading the copy.
+        if (savedInstanceState == null) deleteApkCopy()
 
         session.navigationDelegate = object : GeckoSession.NavigationDelegate {
             override fun onCanGoBack(session: GeckoSession, canGoBack: Boolean) {
