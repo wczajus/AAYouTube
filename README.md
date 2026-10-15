@@ -9,12 +9,13 @@ Aplikacja nie jest przeznaczona do Sklepu Play.
 ## Jak to działa
 
 - Silnik przeglądarki to **GeckoView** (Firefox), bo Google blokuje logowanie w zwykłym WebView.
-- W aucie aplikacja używa starego mechanizmu **projekcji** Android Auto (tak jak Fermata Auto).
-  Nowa oficjalna biblioteka `androidx.car.app` odpada: Android Auto 17 w aucie przepuszcza jej aplikacje
-  tylko wtedy, gdy są zainstalowane ze Sklepu Play.
-- Biblioteka projekcji (`aauto.aar`) nie jest w tym repozytorium. Gradle pobiera ją przy budowaniu
-  z ustalonej wersji projektu Fermata i sprawdza sumę SHA-256 (`app/build.gradle.kts`).
-  To nieoficjalny, zamknięty plik Google; używamy go wyłącznie prywatnie.
+- Ekran z wideo w aucie (**AAYouTube Wideo**) to aplikacja nawigacyjna Android Auto (`androidx.car.app`),
+  bo tylko nawigacja dostaje cały ekran do rysowania. Android Auto 17 pokazuje ją w aucie tylko wtedy,
+  gdy telefon uznaje ją za zainstalowaną ze Sklepu Play (patrz „Włączenie w Android Auto”).
+- W kodzie zostało jeszcze wcześniejsze podejście ze starym mechanizmem **projekcji** (tak jak Fermata Auto),
+  którego Android Auto 17 w ogóle nie pokazuje. Jego biblioteka (`aauto.aar`) nie jest w tym repozytorium:
+  Gradle pobiera ją przy budowaniu z ustalonej wersji projektu Fermata i sprawdza sumę SHA-256
+  (`app/build.gradle.kts`). To nieoficjalny, zamknięty plik Google; używamy go wyłącznie prywatnie.
 - W aucie: pasek z przyciskami **Szukaj**, **Wstecz**, **Start** nad stroną YouTube. Dotyk działa bezpośrednio,
   wyszukiwanie korzysta z klawiatury auta.
 - Dodatkowo aplikacja ma usługę multimedialną **AAYouTube Audio** (na razie tylko z podpowiedzią), która też
@@ -62,8 +63,8 @@ Pierwszy build z tym kluczem trzeba jeszcze zainstalować po odinstalowaniu star
 
 ## Włączenie w Android Auto (jednorazowo)
 
-Ekran wideo (projekcja) Android Auto pokazuje tylko wtedy, gdy telefon uznaje aplikację za zainstalowaną
-ze Sklepu Play. Na OnePlusie z Androidem 12 nie ustawi tego ani adb (`-i com.android.vending` jest ignorowane),
+Ekran wideo Android Auto pokazuje w aucie tylko wtedy, gdy telefon uznaje aplikację za zainstalowaną
+ze Sklepu Play (w emulatorze auta pokazuje go zawsze). Na OnePlusie z Androidem 12 nie ustawi tego ani adb (`-i com.android.vending` jest ignorowane),
 ani KingInstaller w trybie podstawowym. Działa natomiast systemowy instalator pakietów, któremu aplikacja
 przekazuje nazwę instalatora (`Intent.EXTRA_INSTALLER_PACKAGE_NAME`). Tak zainstalowany jest Local Video Player.
 AAYouTube ma do tego przycisk **Zainstaluj APK**.
@@ -80,17 +81,19 @@ AAYouTube ma do tego przycisk **Zainstaluj APK**.
 7. Odłącz kabel, wymuś zatrzymanie Android Auto (Ustawienia → Aplikacje → Android Auto → Wymuś zatrzymanie) i podłącz ponownie.
 
 Każdą nową wersję instaluj tak samo. Jeśli wersja z GitHuba ma inny klucz podpisu, najpierw odinstaluj starą
-(ze stałym kluczem, patrz wyżej, nie trzeba).
+(ze stałym kluczem, patrz wyżej, nie trzeba). Instalacja z Android Studio albo przez `adb install` może zmienić
+źródło instalacji. Jeśli potem napis nad stroną nie brzmi „Źródło instalacji: Sklep Play”, zainstaluj ten sam plik
+jeszcze raz przyciskiem **Zainstaluj APK**.
 
 ## Pierwsze uruchomienie
 
 1. Otwórz AAYouTube na telefonie i zaloguj się na konto YouTube.
-2. W aucie Android Auto nie pokazuje ikony aplikacji spoza Sklepu Play, ale wznawia ostatnio używaną
-   nawigację. Dlatego najpierw uruchom ekran na emulatorze auta (Desktop Head Unit z Android Studio):
-   w Android Auto menu ⋮ → **Włącz serwer radioodtwarzacza**, na komputerze `adb forward tcp:5277 tcp:5277`
-   i `desktop-head-unit.exe`, a w emulatorze otwórz **AAYouTube Wideo**.
-3. Zamknij emulator (bez stukania w dolny pasek Android Auto), odłącz telefon i podłącz go w aucie.
-   Android Auto otworzy AAYouTube Wideo jako nawigację. Po przełączeniu na inną nawigację powtórz krok 2.
+2. Podłącz telefon w aucie i otwórz AAYouTube z menu aplikacji Android Auto. Możesz swobodnie przełączać się
+   między nią a Mapami Google.
+
+Bez auta ekran można sprawdzić na emulatorze (Desktop Head Unit z Android Studio): w Android Auto menu ⋮ →
+**Włącz serwer radioodtwarzacza**, na komputerze `adb forward tcp:5277 tcp:5277` i `desktop-head-unit.exe`,
+a w emulatorze otwórz **AAYouTube Wideo**.
 
 ## Sterowanie w aucie
 
@@ -121,4 +124,4 @@ tylko go ściszają.
 7. Czy po przełączeniu na Mapy Google dźwięk gra dalej?
 8. Czy jesteś zalogowany (po zalogowaniu na telefonie)?
 
-Jeszcze nie ma: blokowania reklam i przełącznika „wideo w czasie jazdy” (kolejne etapy).
+Jeszcze nie ma przełącznika „wideo w czasie jazdy”. Odłożony: wideo w czasie jazdy jest domyślnie dozwolone.

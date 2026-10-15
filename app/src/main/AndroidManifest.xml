@@ -45,8 +45,8 @@
         </service>
 
         <!-- Video screen as an Android Auto navigation app (Car App Library). The desktop head unit
-             lists it; real cars hide sideloaded ones unless Android Auto resumes it as the last
-             used navigation app. -->
+             always lists it; real cars only once the Play Store is recorded as the installer
+             (install/PlayStoreInstall.kt). -->
         <service
             android:name=".car.YouTubeCarAppService"
             android:exported="true"
