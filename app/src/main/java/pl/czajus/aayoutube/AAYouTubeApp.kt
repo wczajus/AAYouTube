@@ -32,6 +32,7 @@ class AAYouTubeApp : Application() {
                     Log.e(TAG, "Page tweaks not installed", error)
                     pageTweaksReady(null)
                 }
+            AdBlocker.setUp(runtime)
         }
     }
 

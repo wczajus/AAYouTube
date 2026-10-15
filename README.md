@@ -20,6 +20,9 @@ Aplikacja nie jest przeznaczona do Sklepu Play.
 - Dodatkowo aplikacja ma usługę multimedialną **AAYouTube Audio** (na razie tylko z podpowiedzią), która też
   pojawia się w Android Auto. Ekran z wideo to osobna ikona **AAYouTube**.
 - Po odłączeniu kabla strona w aucie się zamyka i odtwarzanie się zatrzymuje.
+- Reklamy blokuje **uBlock Origin**. Aplikacja pobiera go przy pierwszym uruchomieniu z oficjalnej strony dodatków
+  Mozilli (addons.mozilla.org, potrzebny internet) i przy każdym kolejnym sprawdza aktualizacje. Gdyby reklama w filmie
+  mimo to się pojawiła, aplikacja odtwarza ją wyciszoną z maksymalną prędkością i naciska „Pomiń”.
 - Na telefonie aplikacja pokazuje tę samą stronę: tam logujesz się na konto Google (raz).
 
 ## Budowanie

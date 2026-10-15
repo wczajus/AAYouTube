@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "AAYouTube page tweaks",
-  "version": "1.3",
+  "version": "1.4",
   "description": "Changes to the YouTube page for the car screen. Bump the version when changing it.",
   "browser_specific_settings": {
     "gecko": {
@@ -14,7 +14,8 @@
         "https://*.youtube.com/*"
       ],
       "js": [
-        "fullscreen.js"
+        "fullscreen.js",
+        "ads.js"
       ],
       "run_at": "document_start"
     }
