@@ -9,5 +9,10 @@
     <string name="action_back">Wstecz</string>
     <string name="action_home">Start</string>
     <string name="search_hint">Szukaj w YouTube</string>
+    <string name="install_button">Zainstaluj APK</string>
+    <string name="install_status_ok">Źródło instalacji: Sklep Play. Ekran wideo powinien być w aucie.</string>
+    <string name="install_status_missing">Źródło instalacji: brak. Wybierz plik APK tej aplikacji, żeby Android Auto pokazało ekran wideo.</string>
+    <string name="install_preparing">Przygotowuję plik…</string>
+    <string name="install_failed">Nie udało się odczytać pliku APK</string>
     <string name="search_empty">Wpisz, czego szukasz, i zatwierdź</string>
 </resources>

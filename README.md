@@ -39,23 +39,24 @@ Gotowy plik: zakładka **Actions** → ostatnie uruchomienie „Build APK” →
 
 ## Włączenie w Android Auto (jednorazowo)
 
-Android Auto 17.x pokazuje w aucie tylko aplikacje, które telefon uznaje za zainstalowane ze Sklepu Play.
-Zwykła instalacja pliku APK nie wystarcza, nawet z włączonymi „Nieznanymi źródłami”.
-Dlatego AAYouTube instalujemy przez KingInstaller (narzędzie innej firmy: https://github.com/fcaronte/KingInstaller).
+Ekran wideo (projekcja) Android Auto pokazuje tylko wtedy, gdy telefon uznaje aplikację za zainstalowaną
+ze Sklepu Play. Na OnePlusie z Androidem 12 nie ustawi tego ani adb (`-i com.android.vending` jest ignorowane),
+ani KingInstaller w trybie podstawowym. Działa natomiast systemowy instalator pakietów, któremu aplikacja
+przekazuje nazwę instalatora (`Intent.EXTRA_INSTALLER_PACKAGE_NAME`). Tak zainstalowany jest Local Video Player.
+AAYouTube ma do tego przycisk **Zainstaluj APK**.
 
 1. Na telefonie: Ustawienia → Połączone urządzenia → Ustawienia połączeń → **Android Auto**.
 2. Przewiń na dół i stuknij 10 razy w **Wersja**, aż pojawi się informacja o trybie dewelopera.
 3. Menu ⋮ (prawy górny róg) → **Ustawienia dla programistów** → zaznacz **Nieznane źródła**.
-4. Odinstaluj AAYouTube, jeśli był zainstalowany zwykłym instalatorem.
-5. W KingInstaller wybierz `app-release.apk` i zainstaluj metodą podstawową (bez przełączników).
-6. W KingInstaller otwórz **App Diagnostic Checker** i sprawdź AAYouTube oraz, dla porównania, Fermata Control
-   (ona działa w aucie). Pola „Installed by” i „Requested by” powinny być takie same w obu aplikacjach,
-   „Installed by” to Sklep Play (`com.android.vending`). Jeśli nie, spróbuj w KingInstaller metody **Shizuku**
-   albo **Auto-Fixer**. Ekran z wideo (projekcja) najpewniej wymaga źródła „Sklep Play” (tak działa Fermata);
-   usługa multimedialna pojawia się także bez tego.
+4. Zainstaluj `app-release.apk` w dowolny sposób (np. `adb install`) i skopiuj ten sam plik do telefonu
+   (np. `adb push app-release.apk /sdcard/Download/`).
+5. Otwórz AAYouTube na telefonie, stuknij **Zainstaluj APK** i wybierz ten sam plik.
+   Za pierwszym razem Android poprosi o zgodę na instalowanie aplikacji z AAYouTube: zezwól i wróć.
+6. Potwierdź aktualizację. Po ponownym otwarciu AAYouTube napis nad stroną powinien brzmieć
+   „Źródło instalacji: Sklep Play”.
 7. Odłącz kabel, wymuś zatrzymanie Android Auto (Ustawienia → Aplikacje → Android Auto → Wymuś zatrzymanie) i podłącz ponownie.
 
-Każdą nową wersję AAYouTube instaluj tak samo, przez KingInstaller.
+Każdą nową wersję instaluj tak samo. Jeśli wersja z GitHuba ma inny klucz podpisu, najpierw odinstaluj starą.
 
 ## Pierwsze uruchomienie
 
