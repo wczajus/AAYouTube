@@ -61,7 +61,12 @@ Każdą nową wersję instaluj tak samo. Jeśli wersja z GitHuba ma inny klucz p
 ## Pierwsze uruchomienie
 
 1. Otwórz AAYouTube na telefonie i zaloguj się na konto YouTube.
-2. Podłącz telefon do Corolli i wybierz AAYouTube w menu Android Auto.
+2. W aucie Android Auto nie pokazuje ikony aplikacji spoza Sklepu Play, ale wznawia ostatnio używaną
+   nawigację. Dlatego najpierw uruchom ekran na emulatorze auta (Desktop Head Unit z Android Studio):
+   w Android Auto menu ⋮ → **Włącz serwer radioodtwarzacza**, na komputerze `adb forward tcp:5277 tcp:5277`
+   i `desktop-head-unit.exe`, a w emulatorze otwórz **AAYouTube Wideo**.
+3. Zamknij emulator (bez stukania w dolny pasek Android Auto), odłącz telefon i podłącz go w aucie.
+   Android Auto otworzy AAYouTube Wideo jako nawigację. Po przełączeniu na inną nawigację powtórz krok 2.
 
 ## Sterowanie w aucie
 
@@ -69,6 +74,9 @@ Każdą nową wersję instaluj tak samo. Jeśli wersja z GitHuba ma inny klucz p
 |---|---|
 | Stuknięcie | kliknięcie w stronę |
 | Przeciągnięcie palcem | przewijanie strony (jeśli nie działa, najpierw stuknij przycisk ze strzałkami na mapie) |
+| Stuknięcie, a zaraz potem przeciągnięcie | przeciąganie od stukniętego miejsca, np. suwaka na pasku postępu filmu (Android Auto nie podaje, gdzie zaczyna się przeciąganie) |
+| ⏪ / ⏩ (przy mapie) | film 10 s wstecz / do przodu |
+| Przycisk pełnego ekranu w odtwarzaczu | film na cały ekran auta (to samo ponownie: wyjście) |
 | Szukaj | klawiatura auta, wyniki w YouTube |
 | Wstecz | poprzednia strona |
 | Start | strona główna YouTube |

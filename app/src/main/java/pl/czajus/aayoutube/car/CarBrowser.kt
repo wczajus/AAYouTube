@@ -7,6 +7,7 @@ import android.hardware.display.VirtualDisplay
 import android.media.ImageReader
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import androidx.car.app.AppManager
 import androidx.car.app.CarContext
 import androidx.car.app.SurfaceCallback
@@ -15,6 +16,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import org.mozilla.geckoview.GeckoSession
+import org.mozilla.geckoview.MediaSession
 import pl.czajus.aayoutube.YOUTUBE_HOME
 import pl.czajus.aayoutube.geckoRuntime
 
@@ -43,6 +45,14 @@ class CarBrowser(
     private var dpi = 0
     private var stableArea: Rect? = null
 
+    // The page's media (the YouTube video), controlled directly so the car buttons can seek.
+    // The playback position is the last reported one, extrapolated with the playback rate.
+    private var media: MediaSession? = null
+    private var mediaPosition = 0.0
+    private var mediaRate = 0.0
+    private var mediaDuration = 0.0
+    private var mediaPositionTime = 0L
+
     var canGoBack = false
         private set
 
@@ -54,6 +64,28 @@ class CarBrowser(
         session.navigationDelegate = object : GeckoSession.NavigationDelegate {
             override fun onCanGoBack(session: GeckoSession, canGoBack: Boolean) {
                 this@CarBrowser.canGoBack = canGoBack
+            }
+        }
+        session.mediaSessionDelegate = object : MediaSession.Delegate {
+            override fun onActivated(session: GeckoSession, mediaSession: MediaSession) {
+                media = mediaSession
+            }
+
+            override fun onDeactivated(session: GeckoSession, mediaSession: MediaSession) {
+                if (media !== mediaSession) return
+                media = null
+                mediaDuration = 0.0
+            }
+
+            override fun onPositionState(
+                session: GeckoSession,
+                mediaSession: MediaSession,
+                state: MediaSession.PositionState,
+            ) {
+                mediaPosition = state.position
+                mediaRate = state.playbackRate
+                mediaDuration = state.duration
+                mediaPositionTime = SystemClock.elapsedRealtime()
             }
         }
         session.open(carContext.geckoRuntime)
@@ -76,6 +108,23 @@ class CarBrowser(
 
     fun goBack() {
         if (canGoBack) session.goBack()
+    }
+
+    /** Moves the playing video by [seconds] (negative = back). */
+    fun seekBy(seconds: Double) {
+        val media = media ?: return
+        if (!(mediaDuration > 0.0)) {
+            // Length not known (yet): let Gecko pick the step.
+            if (seconds < 0) media.seekBackward() else media.seekForward()
+            return
+        }
+        val now = SystemClock.elapsedRealtime()
+        val current = mediaPosition + (now - mediaPositionTime) / 1000.0 * mediaRate
+        val target = (current + seconds).coerceIn(0.0, mediaDuration)
+        media.seekTo(target, false)
+        // Remember the target so quick repeated presses add up before the page reports back.
+        mediaPosition = target
+        mediaPositionTime = now
     }
 
     // --- SurfaceCallback -------------------------------------------------------------------
