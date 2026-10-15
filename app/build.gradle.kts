@@ -62,7 +62,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8 (code and resource shrinking) is off until a test confirms the shrunk app works;
+            // the APK size report workflow builds it with -Paayt.r8=true.
+            val r8 = providers.gradleProperty("aayt.r8").orNull.toBoolean()
+            isMinifyEnabled = r8
+            isShrinkResources = r8
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }

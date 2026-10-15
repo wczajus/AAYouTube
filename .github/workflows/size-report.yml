@@ -1,0 +1,72 @@
+name: APK size report
+
+# One-off measurement, started by hand: builds the release APK without and with R8 (code and
+# resource shrinking) and prints what each is made of. The R8 build is uploaded for testing.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  size:
+    runs-on: ubuntu-latest
+    env:
+      HAS_RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+      RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+      RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+      RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - run: chmod +x gradlew
+
+      - name: Decode release keystore
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        if: env.HAS_RELEASE_KEYSTORE == 'true'
+        run: |
+          echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "RELEASE_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      - name: Build without R8
+        run: |
+          ./gradlew --no-daemon assembleRelease
+          mkdir -p sizes
+          cp app/build/outputs/apk/release/app-release.apk sizes/plain.apk
+
+      - name: Build with R8
+        continue-on-error: true
+        run: |
+          ./gradlew --no-daemon assembleRelease -Paayt.r8=true || {
+            cat app/build/outputs/mapping/release/missing_rules.txt 2>/dev/null
+            exit 1
+          }
+          cp app/build/outputs/apk/release/app-release.apk sizes/r8.apk
+
+      - name: Size report
+        run: python3 .github/scripts/apk_size.py sizes/*.apk
+
+      - name: Code size by package
+        continue-on-error: true
+        run: |
+          analyzer=$(ls "$ANDROID_HOME"/cmdline-tools/*/bin/apkanalyzer | head -1)
+          for apk in sizes/*.apk; do
+            echo "== $apk"
+            "$analyzer" dex packages --defined-only "$apk" |
+              awk '$1 == "P" { n = split($6, part, "."); if (n <= 3) print $5, $6 }' |
+              sort -rn | head -15
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AAYouTube-r8-apk
+          path: sizes/r8.apk
+          if-no-files-found: ignore
