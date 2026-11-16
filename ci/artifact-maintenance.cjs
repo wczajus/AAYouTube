@@ -44,9 +44,12 @@ module.exports = async function maintainArtifacts({ github, context, core, now =
           } catch (error) {
             if (error.status !== 404) throw error;
             release = (await github.rest.repos.createRelease({
-              ...repo, tag_name: tag, target_commitish: run.head_sha,
+              // A legacy commit can contain different workflows, which GITHUB_TOKEN
+              // cannot tag. This release is an archive container; keep the original
+              // source SHA and workflow URL in its description instead.
+              ...repo, tag_name: tag, target_commitish: context.payload.repository.default_branch,
               name: `Archived Actions downloads — run ${run.run_number}`,
-              body: `Original Actions downloads preserved before storage cleanup.\n\nWorkflow run: ${run.html_url}\nCommit: ${run.head_sha}\n\nZIP files contain the original artifact files.`,
+              body: `Original Actions downloads preserved before storage cleanup.\n\nWorkflow run: ${run.html_url}\nCommit: ${run.head_sha}\n\nZIP files contain the original artifact files. The archive tag points to the default branch at migration time; the original binary source commit is identified above.`,
               prerelease: true, make_latest: 'false'
             })).data;
           }
