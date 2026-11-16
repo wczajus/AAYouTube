@@ -1,0 +1,32 @@
+name: Actions storage policy checks
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'ci/**'
+  push:
+    branches: ['claude/project-thread-mc2h3y']
+    paths:
+      - '.github/workflows/**'
+      - 'ci/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: actions-storage-policy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test archive and deletion safeguards
+        run: node --test ci/*.test.cjs
+      - name: Validate workflow syntax
+        run: |
+          docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.7 \
+            -shellcheck= -pyflakes= .github/workflows/*.yml

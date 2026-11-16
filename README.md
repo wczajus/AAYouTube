@@ -38,8 +38,14 @@ Po pierwszym udanym buildzie można ją tam przypiąć na konkretną wersję.
 ## Budowanie na GitHubie (bez Android Studio)
 
 Plik `.github/workflows/build.yml` buduje APK przy każdym wysłaniu kodu na GitHub.
-Gotowy plik: zakładka **Actions** → ostatnie uruchomienie „Build APK” → sekcja **Artifacts** → `AAYouTube-release-apk`
-(pobiera się ZIP z plikiem `app-release.apk` w środku). Budowanie można też uruchomić ręcznie przyciskiem **Run workflow**.
+Gotowe pliki: zakładka **Releases** → wydanie `AAYouTube build N` → `app-release.apk` lub `app-release.aab`.
+APK pobiera się bezpośrednio, bez rozpakowywania ZIP. Budowanie można też uruchomić ręcznie:
+**Actions** → **Build APK** → **Run workflow**. Link do wydania pojawia się również w podsumowaniu buildu.
+
+Pliki instalacyjne nie są zapisywane jako artefakty Actions. Workflow **Actions artifact maintenance**
+działa codziennie i na żądanie: stare pliki do pobrania przenosi do wydań `actions-archive-*` jako ZIP,
+sprawdza sumę SHA-256 i dopiero wtedy usuwa oryginał z Actions. Znane raporty są usuwane po 3 dniach;
+aktywne buildy, logi oraz cache zależności pozostają zachowane.
 
 ### Stały klucz podpisu (aktualizacja bez odinstalowywania)
 
@@ -125,3 +131,4 @@ tylko go ściszają.
 8. Czy jesteś zalogowany (po zalogowaniu na telefonie)?
 
 Jeszcze nie ma przełącznika „wideo w czasie jazdy”. Odłożony: wideo w czasie jazdy jest domyślnie dozwolone.
+
