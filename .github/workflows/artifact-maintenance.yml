@@ -1,0 +1,45 @@
+name: Actions artifact maintenance
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'List changes without copying or deleting artifacts'
+        type: boolean
+        default: false
+  schedule:
+    - cron: '17 4 * * *'
+  push:
+    branches: ['claude/project-thread-mc2h3y']
+    paths:
+      - '.github/workflows/artifact-maintenance.yml'
+      - 'ci/artifact-maintenance.cjs'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: actions-artifact-maintenance
+  cancel-in-progress: false
+
+jobs:
+  maintain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - name: Test archive and deletion safeguards
+        run: node --test ci/artifact-maintenance.test.cjs
+      - name: Archive downloads and expire old reports
+        uses: actions/github-script@v8
+        with:
+          script: |
+            await require('./ci/artifact-maintenance.cjs')({
+              github, context, core,
+              dryRun: context.eventName === 'workflow_dispatch' && context.payload.inputs?.dry_run === 'true'
+            });

@@ -1,12 +1,12 @@
 name: APK size report
 
 # One-off measurement, started by hand: builds the release APK without and with R8 (code and
-# resource shrinking) and prints what each is made of. The R8 build is uploaded for testing.
+# resource shrinking) and prints what each is made of. The R8 build is published to Releases for testing.
 on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   size:
@@ -65,8 +65,20 @@ jobs:
               sort -rn | head -15
           done
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: AAYouTube-r8-apk
-          path: sizes/r8.apk
-          if-no-files-found: ignore
+      - name: Publish test R8 APK directly to GitHub Releases
+        if: hashFiles('sizes/r8.apk') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="aayt-size-${GITHUB_RUN_NUMBER}"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" sizes/r8.apk --clobber
+          else
+            gh release create "$TAG" sizes/r8.apk --target "$GITHUB_SHA" \
+              --prerelease --latest=false --title "AAYouTube R8 size test ${GITHUB_RUN_NUMBER}" \
+              --notes "Test APK from the size-report workflow, commit ${GITHUB_SHA}."
+          fi
+          echo "Test APK: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${TAG}" >> "$GITHUB_STEP_SUMMARY"
+
