@@ -38,17 +38,25 @@ function fixture(name = 'application-apk') {
   const github = { rest: { actions, repos }, paginate: async (endpoint, args) => { state.calls.push({ endpoint, args }); return state[endpoint]; } };
   const summary = { addHeading: () => summary, addRaw: () => summary, write: async () => {} };
   const core = { info: () => {}, warning: () => {}, setFailed: message => state.failed.push(message), summary };
-  return { state, artifact, github, invoke: options => maintain({ github, context: { repo: { owner: 'owner', repo: 'repo' } }, core, now, ...options }) };
+  return { state, artifact, github, invoke: options => maintain({ github, context: { repo: { owner: 'owner', repo: 'repo' }, payload: { repository: { default_branch: 'main' } } }, core, now, ...options }) };
 }
 
 test('archives a download as a prerelease and verifies its bytes before deletion', async () => {
   const f = fixture();
+  // GitHub rejects tagging a legacy commit with different workflow files.
+  const createRelease = f.github.rest.repos.createRelease;
+  f.github.rest.repos.createRelease = async args => {
+    if (args.target_commitish !== 'main') throw Object.assign(new Error('Resource not accessible by integration'), { status: 403 });
+    return createRelease(args);
+  };
   const result = await f.invoke();
   assert.deepEqual(f.state.deleted, [11]);
   assert.equal(result.bytes, f.state.archive.length);
   assert.equal(f.state.releases[0].prerelease, true);
   assert.equal(f.state.releases[0].make_latest, 'false');
-  assert.equal(f.state.releases[0].target_commitish, 'abc123');
+  assert.equal(f.state.releases[0].target_commitish, 'main');
+  assert.ok(f.state.releases[0].body.includes('Commit: abc123'));
+  assert.ok(f.state.releases[0].body.includes(f.state.run.html_url));
   assert.deepEqual(f.state.uploads[0].data, f.state.archive);
   assert.ok(f.state.calls.every(call => call.args.per_page === 100));
 });
